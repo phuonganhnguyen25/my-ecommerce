@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,4 +9,42 @@ datasource db {
 
 model Init {
   id Int @id @default(autoincrement())
+}
+
+model Name {
+  id       Int       @id @default(autoincrement())
+  name_en  String    @default("")
+  name_vi  String    @default("")
+  entity   ENTITY
+  Category Category? @relation("category_name")
+
+  @@unique([name_en, entity])
+  @@unique([name_vi, entity])
+}
+
+model Category {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now()) @updatedAt
+  order      Int        @default(autoincrement())
+  level      Int        @default(1)
+  parent_id  Int?
+  name_id    Int        @unique
+  name       Name       @relation("category_name", fields: [name_id], references: [id], onDelete: Cascade)
+  parent     Category?  @relation("parent_child", fields: [parent_id], references: [id], onDelete: Cascade)
+  children   Category[] @relation("parent_child")
+
+  @@unique([order, level])
+}
+
+model MassUpload {
+  id        Int    @id @default(autoincrement())
+  name      String
+  json      Json
+  target    ENTITY
+  parent_id Int    @default(0)
+}
+
+enum ENTITY {
+  CATEGORY
 }
