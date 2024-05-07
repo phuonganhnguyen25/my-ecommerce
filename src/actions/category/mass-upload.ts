@@ -24,3 +24,11 @@ export async function findMassUploadRequestWithIdAction(id: number) {
     where: { id },
   });
 }
+
+export async function deleteMassUploadRequestWithIdAction(id: number) {
+  return prismaClientSingleton.massUpload.delete({
+    where: {
+      id,
+    },
+  });
+}

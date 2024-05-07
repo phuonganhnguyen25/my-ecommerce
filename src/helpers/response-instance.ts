@@ -5,7 +5,7 @@ interface IResponseInstance<TData> {
   errors: ZodError["errors"] | any[];
   type: "success" | "error" | "validator";
   message: string;
-  data: TData | any;
+  data: TData;
 }
 
 export class ResponseInstance<TData> {
@@ -14,7 +14,7 @@ export class ResponseInstance<TData> {
     errors: [],
     type: "error",
     message: "error.unknown",
-    data: [],
+    data: [] as TData,
   };
 
   get() {

@@ -62,7 +62,16 @@ export const massUploadWithParentSchema = z
   })
   .refine(
     (x) => {
-      return x.with_parent && x.parent_id < 1;
+      return !(x.with_parent && x.parent_id < 1);
     },
     { message: "error.parent_id_invalid" },
   );
+
+export const getCategoriesSchema = z.object({
+  level: z
+    .number({
+      message: "error.categories_level_must_be_number",
+    })
+    .min(0),
+  with_child: z.boolean(),
+});
