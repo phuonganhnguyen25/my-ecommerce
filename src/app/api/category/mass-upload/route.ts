@@ -25,6 +25,8 @@ import { isEmpty } from "lodash";
  * /api/category/mass-upload:
  *   post:
  *     description: Send request for mass upload category
+ *     tags:
+ *      - Category
  *     requestBody:
  *      required: true
  *      content:
@@ -144,6 +146,8 @@ export async function POST(req: Request) {
  * /api/category/mass-upload:
  *   put:
  *     description: Submit request for mass upload category
+ *     tags:
+ *      - Category
  *     requestBody:
  *      required: true
  *      content:

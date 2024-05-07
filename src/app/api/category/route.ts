@@ -12,6 +12,8 @@ import { NextRequest } from "next/server";
  * /api/category:
  *   get:
  *     description: Get all category
+ *     tags:
+ *      - Category
  *     components:
  *      securitySchemes:
  *        bearerAuth:

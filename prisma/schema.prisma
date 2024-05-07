@@ -17,9 +17,6 @@ model Name {
   name_vi  String    @default("")
   entity   ENTITY
   Category Category? @relation("category_name")
-
-  @@unique([name_en, entity])
-  @@unique([name_vi, entity])
 }
 
 model Category {
