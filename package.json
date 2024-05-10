@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
+    "@vercel/analytics": "^1.2.2",
     "bcrypt": "^5.1.1",
     "convert-csv-to-json": "^2.46.0",
     "dayjs": "^1.11.11",
