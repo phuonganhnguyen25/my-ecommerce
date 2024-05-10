@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Init {
+  id Int @id @default(autoincrement())
+}
+
+model Name {
+  id       Int       @id @default(autoincrement())
+  name_en  String    @default("")
+  name_vi  String    @default("")
+  entity   ENTITY
+  Category Category? @relation("category_name")
+}
+
+model Category {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now()) @updatedAt
+  order      Int        @default(autoincrement())
+  level      Int        @default(1)
+  parent_id  Int?
+  name_id    Int        @unique
+  name       Name       @relation("category_name", fields: [name_id], references: [id], onDelete: Cascade)
+  parent     Category?  @relation("parent_child", fields: [parent_id], references: [id], onDelete: Cascade)
+  children   Category[] @relation("parent_child")
+
+  @@unique([order, level])
+}
+
+model MassUpload {
+  id        Int    @id @default(autoincrement())
+  name      String
+  json      Json
+  target    ENTITY
+  parent_id Int    @default(0)
+}
+
+model User {
+  id         Int              @id @default(autoincrement())
+  created_at DateTime         @default(now())
+  updated_at DateTime         @default(now()) @updatedAt
+  credential UserCredential[] @relation("user_credential")
+  info       UserInfo[]       @relation("user_info")
+}
+
+model UserCredential {
+  id       Int             @id @default(autoincrement())
+  email    String
+  password String
+  type     CREDENTIAL_TYPE
+  user_id  Int
+  User     User            @relation("user_credential", fields: [user_id], references: [id])
+
+  @@unique([user_id, type])
+}
+
+model UserInfo {
+  id         Int             @id @default(autoincrement())
+  first_name String          @default("")
+  last_name  String          @default("")
+  type       CREDENTIAL_TYPE
+  user_id    Int
+  is_active  Boolean         @default(false)
+  User       User            @relation("user_info", fields: [user_id], references: [id])
+
+  @@unique([user_id, type])
+}
+
+model OTP {
+  id       Int        @id @default(autoincrement())
+  value    String
+  expiry   DateTime
+  owner_id Int
+  reason   OTP_REASON
+
+  @@unique([owner_id, reason])
+}
+
+model Session {
+  id         Int             @id @default(autoincrement())
+  value      String
+  created_at DateTime        @default(now())
+  expiry     DateTime
+  owner_id   Int
+  ip         String          @default("")
+  device     String          @default("")
+  for        CREDENTIAL_TYPE
+}
+
+enum CREDENTIAL_TYPE {
+  ADMIN
+}
+
+enum ENTITY {
+  CATEGORY
+}
+
+enum OTP_REASON {
+  ACTIVATE
+  LOGIN
+}
