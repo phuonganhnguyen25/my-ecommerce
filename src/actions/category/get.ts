@@ -5,10 +5,12 @@ import {
   ICategory,
   IGetCategoriesParams,
 } from "@/interfaces/category/category";
+import { getCategoriesSchema } from "@/validators/category";
 
 export async function getCategoriesAction(
   body: IGetCategoriesParams,
 ): Promise<ICategory[]> {
+  getCategoriesSchema.parse(body);
   return prismaClientSingleton.category.findMany({
     orderBy: {
       order: "asc",

@@ -4,8 +4,8 @@ import {
   IGetCategoriesParams,
 } from "@/interfaces/category/category";
 import { getCategoriesAction } from "@/actions/category/get";
-import { getCategoriesSchema } from "@/validators/category";
 import { NextRequest } from "next/server";
+import { verifySessionAction } from "@/actions/admin/auth/verify-session";
 
 /**
  * @swagger
@@ -94,6 +94,8 @@ import { NextRequest } from "next/server";
  *                  type: "error"
  */
 export async function GET(request: NextRequest) {
+  const authorization = (request.headers.get("authorization") ?? "").split(" ");
+
   const responseInstance = ResponseInstance<{ data: ICategory[] }>;
   const searchParams = request.nextUrl.searchParams;
 
@@ -102,19 +104,20 @@ export async function GET(request: NextRequest) {
     with_child: searchParams.get("with_child") === "true",
   };
   try {
-    getCategoriesSchema.parse(params);
+    await verifySessionAction(authorization[1]);
+
     const categories = await getCategoriesAction(params);
-    return Response.json(
-      new responseInstance().success("success.get_categories", {
-        data: categories,
-      }),
-      {
-        status: 200,
-      },
-    );
+
+    const res = new responseInstance().success("success.get_categories", {
+      data: categories,
+    });
+    return Response.json(res, {
+      status: res.status_code,
+    });
   } catch (e) {
-    return Response.json(new responseInstance().throwError(e), {
-      status: 400,
+    const err = new responseInstance().throwError(e);
+    return Response.json(err, {
+      status: err.status_code,
     });
   }
 }

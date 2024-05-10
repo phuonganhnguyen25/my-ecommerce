@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+
 const allowedOrigins = ["https://acme.com", "https://my-app.org"];
 const corsOptions = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-export function middleware(request: NextRequest) {
-  const authorization = (request.headers.get("authorization") ?? "").split(" ");
-  console.log("authorization", authorization);
+export async function middleware(request: NextRequest) {
   const origin = request.headers.get("origin") ?? "";
   const isAllowedOrigin = allowedOrigins.includes(origin);
   const isPreflight = request.method === "OPTIONS";

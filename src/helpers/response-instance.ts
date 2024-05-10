@@ -1,7 +1,9 @@
 import { ZodError } from "zod";
+import { HttpError } from "@/helpers/error-instance";
 
 interface IResponseInstance<TData> {
   status: boolean;
+  status_code: number;
   errors: ZodError["errors"] | any[];
   type: "success" | "error" | "validator";
   message: string;
@@ -11,6 +13,7 @@ interface IResponseInstance<TData> {
 export class ResponseInstance<TData> {
   private instance: IResponseInstance<TData> = {
     status: false,
+    status_code: 400,
     errors: [],
     type: "error",
     message: "error.unknown",
@@ -21,8 +24,9 @@ export class ResponseInstance<TData> {
     return this.instance;
   }
 
-  success(message: string, data: TData) {
+  success(message: string, data: TData, statusCode: number = 200) {
     this.instance.status = true;
+    this.instance.status_code = statusCode;
     this.instance.type = "success";
     this.instance.message = message;
     this.instance.data = data;
@@ -38,7 +42,9 @@ export class ResponseInstance<TData> {
     } else if (e instanceof Error) {
       this.instance.type = "error";
       this.instance.message = e.message;
+    } else if (e instanceof HttpError) {
     }
+    this.instance.status_code = e.statusCode || 400;
     return this.get();
   }
 }

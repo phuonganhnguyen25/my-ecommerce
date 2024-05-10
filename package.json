@@ -11,17 +11,23 @@
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
+    "bcrypt": "^5.1.1",
     "convert-csv-to-json": "^2.46.0",
+    "dayjs": "^1.11.11",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "next": "14.2.3",
     "next-swagger-doc": "^0.4.0",
     "prisma": "^5.13.0",
     "react": "^18",
     "react-dom": "^18",
+    "resend": "^3.2.0",
     "swagger-ui-react": "^5.17.4",
     "zod": "^3.23.6"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash": "^4.17.1",
     "@types/node": "^20",
     "@types/react": "^18",
