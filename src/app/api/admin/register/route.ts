@@ -81,7 +81,9 @@ export async function POST(req: Request) {
     const body: any = await req.json();
     const res = await AdminRegisterAction(pick(body, ["email", "password"]));
     return Response.json(new responseInstance().success(res, res));
-  } catch (e) {
-    return Response.json(new responseInstance().throwError(e), { status: 400 });
+  } catch (e: any) {
+    return Response.json(new responseInstance().throwError(e), {
+      status: e.statusCode,
+    });
   }
 }

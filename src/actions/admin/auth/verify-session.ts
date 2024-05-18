@@ -1,6 +1,6 @@
 "use server";
 
-import { decode, verify } from "jsonwebtoken";
+import { decode, JsonWebTokenError, verify } from "jsonwebtoken";
 import { prismaClientSingleton } from "@/helpers/prisma-client-singleton";
 import { CREDENTIAL_TYPE } from "@prisma/client";
 import dayjs from "dayjs";
@@ -22,6 +22,8 @@ export async function verifySessionAction(jwt: string) {
     if (!session || dayjs(session.expiry).isBefore(dayjs()))
       throw new HttpError("error.session_expired", 401);
   } catch (e) {
+    if (e instanceof JsonWebTokenError)
+      throw new HttpError("error.session_expired", 401);
     throw e;
   }
 }

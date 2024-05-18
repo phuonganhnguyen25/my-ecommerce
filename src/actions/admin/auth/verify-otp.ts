@@ -8,6 +8,7 @@ import { CREDENTIAL_TYPE, OTP_REASON } from "@prisma/client";
 import { generateOTP } from "@/helpers/otp-generation";
 import { getTimeFromMinutes } from "@/helpers/time";
 import { sign } from "jsonwebtoken";
+import { HttpError } from "@/helpers/error-instance";
 
 export async function verifyOtpAction(body: IAdminVerifyOTPBody) {
   try {
@@ -17,11 +18,11 @@ export async function verifyOtpAction(body: IAdminVerifyOTPBody) {
         where: { value: body.otp },
       })
       .catch((e) => {
-        if (e.code === "P2025") throw new Error("error.otp_not_found");
+        if (e.code === "P2025") throw new HttpError("error.otp_not_found", 404);
         throw e;
       });
     if (dayjs(otp.expiry).isBefore(dayjs())) {
-      throw new Error("error.otp_expired");
+      throw new HttpError("error.otp_expired", 400);
     }
 
     switch (otp.reason) {

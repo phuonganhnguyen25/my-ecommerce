@@ -78,7 +78,9 @@ export async function POST(req: Request) {
         pick(res, ["access_token"]),
       ),
     );
-  } catch (e) {
-    return Response.json(new responseInstance().throwError(e), { status: 400 });
+  } catch (e: any) {
+    return Response.json(new responseInstance().throwError(e), {
+      status: e.statusCode,
+    });
   }
 }

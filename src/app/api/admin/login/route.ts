@@ -76,7 +76,9 @@ export async function POST(req: Request) {
   try {
     const res = await adminLoginAction(pick(body, ["email", "password"]));
     return Response.json(new responseInstance().success(res, []));
-  } catch (e) {
-    return Response.json(new responseInstance().throwError(e), { status: 400 });
+  } catch (e: any) {
+    return Response.json(new responseInstance().throwError(e), {
+      status: e.statusCode,
+    });
   }
 }

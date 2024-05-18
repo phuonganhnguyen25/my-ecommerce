@@ -10,38 +10,35 @@ import { getTimeFromMinutes } from "@/helpers/time";
 // import { Resend } from "resend";
 // import { AdminLoginTemplate } from "@/components/email-template/admin-login";
 import dayjs from "dayjs";
+import { HttpError } from "@/helpers/error-instance";
 
 export async function adminLoginAction(body: IAdminRegisterBody) {
   try {
     authFormSchema.parse(body);
-    const user = await prismaClientSingleton.user
-      .findFirstOrThrow({
-        where: {
-          AND: [
-            {
-              credential: {
-                every: { email: body.email, type: CREDENTIAL_TYPE.ADMIN },
+    const user = await prismaClientSingleton.user.findFirst({
+      where: {
+        AND: [
+          {
+            credential: {
+              every: { email: body.email, type: CREDENTIAL_TYPE.ADMIN },
+            },
+          },
+          {
+            info: {
+              every: {
+                is_active: true,
+                type: CREDENTIAL_TYPE.ADMIN,
               },
             },
-            {
-              info: {
-                every: {
-                  is_active: true,
-                  type: CREDENTIAL_TYPE.ADMIN,
-                },
-              },
-            },
-          ],
-        },
-        include: {
-          credential: true,
-          info: true,
-        },
-      })
-      .catch(() => {
-        throw new Error("error.user_not_found");
-      });
-
+          },
+        ],
+      },
+      include: {
+        credential: true,
+        info: true,
+      },
+    });
+    if (!user) throw new HttpError("error.user_not_found_or_inactive", 404);
     if (!(await compare(body.password, user.credential?.[0]?.password || "")))
       throw new Error("error.user_password_not_match");
 
@@ -53,7 +50,6 @@ export async function adminLoginAction(body: IAdminRegisterBody) {
     });
 
     const otp = generateOTP(6);
-
     if (!loginOtp) {
       await prismaClientSingleton.oTP.create({
         data: {
